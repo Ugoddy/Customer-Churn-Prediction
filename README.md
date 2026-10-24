@@ -1,6 +1,8 @@
 # Customer Churn Prediction
 
-An end-to-end machine learning project that predicts which telecom customers are likely to cancel, served through a REST API and a Streamlit web app.
+![CI](https://github.com/Ugoddy/Customer-Churn-Prediction/actions/workflows/ci.yml/badge.svg)
+
+An end-to-end machine learning project that predicts which telecom customers are likely to cancel, served through a REST API and a Streamlit web app, packaged with Docker and tested automatically with GitHub Actions.
 
 **Business question:** which customers are likely to churn, so the company can step in and retain them?
 
@@ -38,14 +40,32 @@ app/
   predictor.py       model loading and prediction logic
 tests/
   test_api.py        5 automated tests
+.github/workflows/
+  ci.yml             CI: runs tests, builds Docker images, smoke-tests the API
 streamlit_app.py     Streamlit front end: a form that calls the API
+Dockerfile.api / Dockerfile.streamlit   one image per service
+docker-compose.yml   starts both services together
+requirements-api.txt / requirements-app.txt   dependencies per image
 churn_pipeline_v2.ipynb   EDA, modelling, threshold tuning
 churn_pipeline.joblib     trained pipeline (scikit-learn 1.7.2)
 churn_config.json         threshold, column order, valid category values
 Telco-Customer-Churn.csv  dataset
 ```
 
-## Run it locally
+## Run it with Docker (recommended)
+
+With Docker Desktop running, from the project folder:
+
+```bash
+docker compose up --build
+```
+
+- Streamlit app: http://localhost:8501
+- API docs: http://localhost:8000/docs
+
+Compose starts the API first, waits until its `/health` check passes, then starts the app. Press `Ctrl + C` to stop.
+
+## Run it locally (without Docker)
 
 ```bash
 pip install -r requirements.txt
@@ -87,8 +107,8 @@ Run the tests with `pytest`.
 - [x] Notebook with a single sklearn pipeline
 - [x] FastAPI service with input validation and tests
 - [x] Streamlit front end that calls the API
-- [ ] Docker and docker-compose
-- [ ] CI/CD with GitHub Actions
+- [x] Docker and docker-compose
+- [x] CI/CD with GitHub Actions (tests + Docker build + smoke test on every push)
 - [ ] Deployment on AWS
 - [ ] Retraining and model tracking on Databricks (MLflow)
 
