@@ -1,6 +1,6 @@
 # Customer Churn Prediction
 
-An end-to-end machine learning project that predicts which telecom customers are likely to cancel, served through a REST API.
+An end-to-end machine learning project that predicts which telecom customers are likely to cancel, served through a REST API and a Streamlit web app.
 
 **Business question:** which customers are likely to churn, so the company can step in and retain them?
 
@@ -27,7 +27,7 @@ The final model is a logistic regression: it ties the random forest on ROC AUC, 
 All preprocessing (scaling numeric features, one-hot encoding categorical ones) lives inside a single scikit-learn `Pipeline`. The saved model accepts raw customer data directly, so the API needs no separate encoders.
 
 ```
-raw customer JSON -> FastAPI validation -> Pipeline (scale + encode + model) -> churn probability
+Streamlit form -> FastAPI validation -> Pipeline (scale + encode + model) -> churn probability -> Streamlit result
 ```
 
 ## Project structure
@@ -38,6 +38,7 @@ app/
   predictor.py       model loading and prediction logic
 tests/
   test_api.py        5 automated tests
+streamlit_app.py     Streamlit front end: a form that calls the API
 churn_pipeline_v2.ipynb   EDA, modelling, threshold tuning
 churn_pipeline.joblib     trained pipeline (scikit-learn 1.7.2)
 churn_config.json         threshold, column order, valid category values
@@ -48,12 +49,27 @@ Telco-Customer-Churn.csv  dataset
 
 ```bash
 pip install -r requirements.txt
+```
+
+Open two terminals in the project folder.
+
+**Terminal 1: the API**
+
+```bash
 uvicorn app.main:app --reload
 ```
 
-Open http://127.0.0.1:8000/docs, choose **POST /predict**, click **Try it out** and **Execute**.
+API docs are at http://127.0.0.1:8000/docs (choose **POST /predict**, then **Try it out** and **Execute**).
 
-Example response:
+**Terminal 2: the Streamlit app**
+
+```bash
+streamlit run streamlit_app.py
+```
+
+Open http://localhost:8501, fill in the customer form and click **Predict churn risk**. The app sends the details to the API and shows the result: a red box for high risk, a green one for low risk.
+
+Example API response:
 
 ```json
 {
@@ -70,7 +86,7 @@ Run the tests with `pytest`.
 
 - [x] Notebook with a single sklearn pipeline
 - [x] FastAPI service with input validation and tests
-- [ ] Streamlit front end that calls the API
+- [x] Streamlit front end that calls the API
 - [ ] Docker and docker-compose
 - [ ] CI/CD with GitHub Actions
 - [ ] Deployment on AWS
